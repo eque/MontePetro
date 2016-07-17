@@ -1,5 +1,6 @@
 import numpy as np
 from montepetro.generators import RandomGenerator
+from future.utils import iteritems
 
 
 class Property(object):
@@ -76,7 +77,7 @@ class ModelOriginalOilInPlace(RegionalProperty):
 
     def calculation(self):
         ooips = []
-        for region_name, region in self.model.regions.iteritems():
+        for region_name, region in iteritems(self.model.regions):
             ooips.append(region.properties["ooip"].values)
 
         # assumes len(arrlist) > 0

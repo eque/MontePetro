@@ -1,6 +1,7 @@
 import logging
 from copy import deepcopy
 from montepetro.seed_generators import SeedGenerator
+from future.utils import iteritems
 
 
 class Model(object):
@@ -34,20 +35,20 @@ class Model(object):
             self.properties[prop.name] = prop
 
     def add_defined_properties_to_regions(self):
-        for region_name, region in self.regions.iteritems():
-            for property_name, property in self.properties.iteritems():
+        for region_name, region in iteritems(self.regions):
+            for property_name, property in iteritems(self.properties):
                 if property_name not in region.properties.keys():
                     region.add_property(deepcopy(property))
                     region.properties[property_name].update_seed(self.seed_generator)
 
     def add_regional_property(self, prop_name, prop):
-        for region_name, region in self.regions.iteritems():
+        for region_name, region in iteritems(self.regions):
             region.properties[prop_name] = prop(region)
             region.properties[prop_name].generate_values()
 
     def run(self, config):
-        for region_name, region in self.regions.iteritems():
+        for region_name, region in iteritems(self.regions):
             region_config = config[region_name]
-            for property_name, property in region.properties.iteritems():
+            for property_name, property in iteritems(region.properties):
                 regional_property_config = region_config[property_name]
                 property.generate_values(**regional_property_config)
