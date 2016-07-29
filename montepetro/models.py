@@ -52,3 +52,36 @@ class Model(object):
             for property_name, property in iteritems(region.properties):
                 regional_property_config = region_config[property_name]
                 property.generate_values(**regional_property_config)
+
+    def add_region2(self, region):
+        if region.name in self.regions.keys():
+            logging.log(logging.ERROR,
+                        "Encountered duplicate region" + str(region.name) + " in Model " + self.name + ".")
+            raise KeyError
+        else:
+            self.regions[region.name] = region
+            self.properties[region.name] = {}
+
+    def add_property2(self, region_name, prop):
+
+        if prop.name in self.properties[region_name].keys():
+            logging.log(logging.ERROR,
+                    "Encountered duplicate property" + str(prop.name) + " in Model " + self.name + ".")
+            raise KeyError
+        else:
+            prop.update_seed(self.seed_generator)
+            self.properties[region_name][prop.name] = prop
+
+    def add_defined_properties_to_regions2(self):
+        for region_name, region in iteritems(self.regions):
+            for property_name in self.properties[region_name].keys():
+                if property_name not in region.properties.keys():
+                    region.add_property(deepcopy(self.properties[region_name][property_name]))
+                    region.properties[property_name].update_seed(self.seed_generator)
+
+    def run2(self, config):
+        for region_name, region in iteritems(self.regions):
+            region_config = config[region_name]
+            for property_name, props in iteritems(region.properties):
+                regional_property_config = region_config[property_name]
+                props.generate_values(**regional_property_config)

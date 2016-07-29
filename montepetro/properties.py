@@ -94,3 +94,30 @@ class ModelOriginalOilInPlace(RegionalProperty):
 
     def generate_values(self):
         self.values = self.calculation()
+
+class VolumeInPlace(RegionalProperty):
+    def __init__(self, region, *args, **kwargs):
+        Property.__init__(self, *args, **kwargs)
+        self.region = region
+
+    def calculation(self):
+
+        area = self.region.properties["Area"]
+        height = self.region.properties["Height"]
+        corr = self.region.properties["Cor"]
+        vol = self.region.properties["Vol"].values
+        ntg = self.region.properties["Ntg"].values
+        phi = self.region.properties["Porosity"].values
+        sw = self.region.properties["Sw"].values
+        fvf = self.region.properties["Fvf"].values
+        inplace = area*height*corr*vol*ntg*phi*(1.0-sw)*fvf 
+        return inplace
+
+    def calculate_property_statistics(self):
+        self.p90 = np.percentile(self.values, 10)
+        self.p50 = np.percentile(self.values, 50)
+        self.p10 = np.percentile(self.values, 90)
+        self.mean = np.mean(self.values)
+
+    def generate_values(self):
+        self.values = self.calculation()
