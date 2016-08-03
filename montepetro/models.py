@@ -72,6 +72,9 @@ class Model(object):
             prop.update_seed(self.seed_generator)
             self.properties[region_name][prop.name] = prop
 
+    def add_constantfactorRegion(self, region_name, propname, factor):
+        self.regions[region_name].properties[propname] = factor
+
     def add_defined_properties_to_regions2(self):
         for region_name, region in iteritems(self.regions):
             for property_name in self.properties[region_name].keys():
