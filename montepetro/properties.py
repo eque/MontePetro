@@ -101,16 +101,24 @@ class VolumeInPlace(RegionalProperty):
         self.region = region
 
     def calculation(self):
-
-        area = self.region.properties["Area"]
-        height = self.region.properties["Height"]
-        corr = self.region.properties["Cor"]
-        vol = self.region.properties["Vol"].values
-        ntg = self.region.properties["Ntg"].values
-        phi = self.region.properties["Porosity"].values
-        sw = self.region.properties["Sw"].values
-        fvf = self.region.properties["Fvf"].values
-        inplace = area*height*corr*vol*ntg*phi*(1.0-sw)*fvf 
+        if "Vol" in self.region.properties:
+            vol = self.region.properties["Vol"].values
+            ntg = self.region.properties["Ntg"].values
+            phi = self.region.properties["Porosity"].values
+            sw = self.region.properties["Sw"].values
+            fvf = self.region.properties["Fvf"].values
+            inplace = vol*ntg*phi*(1.0-sw)*fvf
+        elif "Area" in self.region.properties:
+            area = self.region.properties["Area"].values
+            cor = self.region.properties["Cor"]
+            height = self.region.properties["Height"].values
+            ntg = self.region.properties["Ntg"].values
+            phi = self.region.properties["Porosity"].values
+            sw = self.region.properties["Sw"].values
+            fvf = self.region.properties["Fvf"].values
+            inplace = area*height*ntg*phi*(1.0-sw)*fvf*cor
+        else:
+            inplace = 0
         return inplace
 
     def calculate_property_statistics(self):
