@@ -1,7 +1,8 @@
 import numpy as np
 from montepetro.generators import RandomGenerator
 from future.utils import iteritems
-
+import tkinter as tk
+from tkinter import messagebox
 
 class Property(object):
     def __init__(self,  name=None, desc=None):
@@ -101,16 +102,26 @@ class VolumeInPlace(RegionalProperty):
         self.region = region
 
     def calculation(self):
-
-        area = self.region.properties["Area"]
-        height = self.region.properties["Height"]
-        corr = self.region.properties["Cor"]
-        vol = self.region.properties["Vol"].values
-        ntg = self.region.properties["Ntg"].values
-        phi = self.region.properties["Porosity"].values
-        sw = self.region.properties["Sw"].values
-        fvf = self.region.properties["Fvf"].values
-        inplace = area*height*corr*vol*ntg*phi*(1.0-sw)*fvf 
+        if "Vol" in self.region.properties:
+            vol = self.region.properties["Vol"].values
+            ntg = self.region.properties["Ntg"].values
+            phi = self.region.properties["Porosity"].values
+            sw = self.region.properties["Sw"].values
+            fvf = self.region.properties["Fvf"].values
+            unitCor = self.region.properties["CorUnit"]
+            inplace = vol*ntg*phi*(1.0-sw)/fvf*unitCor * 1000000
+        elif "Area" in self.region.properties:
+            area = self.region.properties["Area"].values
+            cor = self.region.properties["CorShape"]
+            height = self.region.properties["Height"].values
+            ntg = self.region.properties["Ntg"].values
+            phi = self.region.properties["Porosity"].values
+            sw = self.region.properties["Sw"].values
+            fvf = self.region.properties["Fvf"].values
+            unitCor = self.region.properties["CorUnit"]
+            inplace = area*height*ntg*phi*(1.0-sw)/fvf*cor*unitCor / 1000000
+        else:
+            inplace = 0
         return inplace
 
     def calculate_property_statistics(self):
