@@ -109,7 +109,8 @@ class VolumeInPlace(RegionalProperty):
             sw = self.region.properties["Sw"].values
             fvf = self.region.properties["Fvf"].values
             unitCor = self.region.properties["CorUnit"]
-            inplace = vol*ntg*phi*(1.0-sw)/fvf*unitCor * 1000000
+            risk = self.region.properties["Risk"]
+            inplace = vol*ntg*phi*(1.0-sw)/fvf*unitCor * 1000000 * risk
         elif "Area" in self.region.properties:
             area = self.region.properties["Area"].values
             cor = self.region.properties["CorShape"]
@@ -119,7 +120,8 @@ class VolumeInPlace(RegionalProperty):
             sw = self.region.properties["Sw"].values
             fvf = self.region.properties["Fvf"].values
             unitCor = self.region.properties["CorUnit"]
-            inplace = area*height*ntg*phi*(1.0-sw)/fvf*cor*unitCor / 1000000
+            risk = self.region.properties["Risk"]
+            inplace = area*height*ntg*phi*(1.0-sw)/fvf*cor*unitCor / 1000000 * risk
         else:
             inplace = 0
         return inplace
